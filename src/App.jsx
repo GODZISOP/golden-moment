@@ -3,10 +3,11 @@ import {
   Phone, Mail, MapPin, Search, ArrowRight, CheckCircle2,
   X, MessageSquare, ShoppingBag, Menu as MenuIcon,
   Plus, Minus, Trash2, Heart, User, ChevronRight,
-  ChevronDown, Package, Star, Globe, Sparkles, ShieldCheck, Award
+  ChevronDown, Package, Star, Globe, Sparkles, ShieldCheck, Award, Building2
 } from 'lucide-react';
 import { categories, products } from './data/products';
-import { siteConfig } from './data/siteConfig';
+import { siteConfig as defaultSiteConfig } from './data/siteConfig';
+import { AdminPanel, useActiveSiteConfig } from './admin';
 import logoImg from './images/golden-moment-logo.svg';
 import heroBg from './images/hero-golden-moment.webp';
 import brandBottleImg from './images/bottle-golden-moment.webp';
@@ -14,7 +15,65 @@ import bannerScentImg from './images/banner-elegance-scent.webp';
 import catBodyOilsImg from './images/cat-body-oils.webp';
 import catJournalsImg from './images/cat-journals.webp';
 
+function isAdminHostname() {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  return (
+    host.startsWith('admin.') ||
+    host.includes('-admin.') ||
+    host.includes('admin-') ||
+    import.meta.env.VITE_ADMIN_ONLY === 'true'
+  );
+}
+
+function checkIsAdminRoute() {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  const cleanPath = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+  const cleanHash = window.location.hash.toLowerCase();
+  if (
+    cleanPath.endsWith('/admin') ||
+    cleanHash.startsWith('#admin') ||
+    cleanHash.startsWith('#/admin') ||
+    params.has('admin')
+  ) {
+    return true;
+  }
+  if (isAdminHostname() && !params.has('preview')) {
+    return true;
+  }
+  return false;
+}
+
 export default function App() {
+  const { config: dynamicConfig, refresh: refreshActiveSite } = useActiveSiteConfig();
+  const siteConfig = dynamicConfig || defaultSiteConfig;
+  const [isAdminMode, setIsAdminMode] = useState(checkIsAdminRoute);
+
+  useEffect(() => {
+    const syncRoute = () => setIsAdminMode(checkIsAdminRoute());
+    window.addEventListener('popstate', syncRoute);
+    window.addEventListener('hashchange', syncRoute);
+    return () => {
+      window.removeEventListener('popstate', syncRoute);
+      window.removeEventListener('hashchange', syncRoute);
+    };
+  }, []);
+
+  const exitAdmin = () => {
+    refreshActiveSite();
+    if (window.location.pathname.replace(/\/+$/, '').toLowerCase().endsWith('/admin')) {
+      window.history.pushState({}, '', '/');
+    } else if (window.location.hash.toLowerCase().includes('admin')) {
+      window.location.hash = '';
+    }
+    if (window.location.search.includes('admin')) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('admin');
+      window.history.replaceState({}, '', url.toString());
+    }
+    setIsAdminMode(false);
+  };
   const [activeTab, setActiveTab] = useState('home'); // 'home' | 'shop' | 'about' | 'faq' | 'contact' | 'product-detail'
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -91,14 +150,40 @@ export default function App() {
     return `€${Number(eurAmount).toFixed(2)}`;
   };
 
-  // Document title & favicon
+  // Theme, document title & favicon
   useEffect(() => {
-    document.title = `${siteConfig.companyName} | ${siteConfig.tagline}`;
+    const root = document.documentElement;
+    if (siteConfig.theme) {
+      if (siteConfig.theme.primaryNavy) {
+        root.style.setProperty('--gm-ink', siteConfig.theme.primaryNavy);
+        root.style.setProperty('--primary-navy', siteConfig.theme.primaryNavy);
+      }
+      if (siteConfig.theme.secondaryTeal) {
+        root.style.setProperty('--secondary-teal', siteConfig.theme.secondaryTeal);
+      }
+      const accent = siteConfig.theme.accentTeal || siteConfig.theme.accentGold;
+      if (accent) {
+        root.style.setProperty('--gm-gold', accent);
+        root.style.setProperty('--accent-teal', accent);
+      }
+      if (siteConfig.theme.accentGold || accent) {
+        root.style.setProperty('--gm-gold-bright', siteConfig.theme.accentGold || accent);
+        root.style.setProperty('--accent-gold', siteConfig.theme.accentGold || accent);
+      }
+      if (siteConfig.theme.accentHover) {
+        root.style.setProperty('--gm-gold-dark', siteConfig.theme.accentHover);
+        root.style.setProperty('--accent-teal-hover', siteConfig.theme.accentHover);
+      }
+      if (siteConfig.theme.bgLight) {
+        root.style.setProperty('--gm-white', siteConfig.theme.bgLight);
+      }
+    }
+    document.title = `${siteConfig.companyName}${siteConfig.tagline ? ` | ${siteConfig.tagline}` : ''}`;
     const faviconLink = document.querySelector("link[rel*='icon']");
     if (faviconLink && siteConfig.logo) {
       faviconLink.href = siteConfig.logo;
     }
-  }, []);
+  }, [siteConfig, isAdminMode]);
 
   // Persist cart & wishlist
   useEffect(() => {
@@ -333,37 +418,57 @@ export default function App() {
               <h3>{siteConfig.contact.cardTitle}</h3>
               <div className="gm-contact-rows">
                 <div>
-                  <Mail size={18} color="#c5a24d" />
+                  <Building2 size={18} color="#c5a24d" />
                   <div>
-                    <small>{siteConfig.contact.labels.email}</small>
-                    <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+                    <small>Company Name</small>
+                    <span>{siteConfig.companyName}</span>
                   </div>
                 </div>
                 <div>
                   <Phone size={18} color="#c5a24d" />
                   <div>
-                    <small>{siteConfig.contact.labels.phone}</small>
+                    <small>{siteConfig.contact?.labels?.phone || 'Phone Number'}</small>
                     <a href={`tel:${siteConfig.phoneDirectTel}`}>{siteConfig.phoneDirect}</a>
                   </div>
                 </div>
                 <div>
                   <MessageSquare size={18} color="#c5a24d" />
                   <div>
-                    <small>{siteConfig.contact.labels.whatsapp}</small>
+                    <small>{siteConfig.contact?.labels?.whatsapp || 'WhatsApp Number'}</small>
                     <a
                       href={`https://wa.me/${siteConfig.whatsappNumber}`}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      Chat on WhatsApp ({siteConfig.whatsappDisplay}) →
+                      Chat on WhatsApp ({siteConfig.whatsappDisplay || siteConfig.phoneDirect}) →
                     </a>
+                  </div>
+                </div>
+                <div>
+                  <Mail size={18} color="#c5a24d" />
+                  <div>
+                    <small>{siteConfig.contact?.labels?.email || 'Email Address'}</small>
+                    <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
                   </div>
                 </div>
                 <div>
                   <MapPin size={18} color="#c5a24d" />
                   <div>
-                    <small>{siteConfig.contact.labels.hub}</small>
+                    <small>{siteConfig.contact?.labels?.hub || 'Registered Address'}</small>
                     <span>{siteConfig.address.full}</span>
+                  </div>
+                </div>
+                <div>
+                  <Globe size={18} color="#c5a24d" />
+                  <div>
+                    <small>Official Website</small>
+                    <a
+                      href={`https://${(siteConfig.website || 'www.thegoldenmoment.com').replace(/^https?:\/\//, '')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {siteConfig.website || 'www.thegoldenmoment.com'}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -403,6 +508,10 @@ export default function App() {
       </section>
     );
   };
+
+  if (isAdminMode) {
+    return <AdminPanel onExitAdmin={exitAdmin} />;
+  }
 
   return (
     <div className="gm-app-shell">
@@ -608,10 +717,16 @@ export default function App() {
             <div className="gm-hero-scrim" aria-hidden="true" />
             <div className="gm-hero-content">
               <h1 className="gm-hero-title">
-                <span className="gm-hero-light">LUXURY</span>
-                <br />
-                <span className="gm-hero-light">ROOTED IN </span>
-                <span className="gm-hero-strong">NATURE</span>
+                {siteConfig.heroTitle && siteConfig.heroTitle !== 'LUXURY ROOTED IN NATURE' ? (
+                  siteConfig.heroTitle
+                ) : (
+                  <>
+                    <span className="gm-hero-light">LUXURY</span>
+                    <br />
+                    <span className="gm-hero-light">ROOTED IN </span>
+                    <span className="gm-hero-strong">NATURE</span>
+                  </>
+                )}
               </h1>
               <p className="gm-hero-subtitle">
                 {siteConfig.heroSubtitle}
@@ -1283,10 +1398,16 @@ export default function App() {
       <footer className="gm-footer">
         <div className="gm-footer-grid">
           <div className="gm-footer-brand">
-            <img src={logoImg} alt={siteConfig.companyName} className="gm-footer-logo" />
+            <img src={siteConfig.logo || logoImg} alt={siteConfig.companyName} className="gm-footer-logo" />
             <div className="gm-footer-wordmark">
-              <span>GOLDEN</span>
-              <span className="gm-word-gold">MOMENT</span>
+              {siteConfig.companyName && siteConfig.companyName.toUpperCase() !== 'GOLDEN MOMENT' ? (
+                <span>{siteConfig.companyName}</span>
+              ) : (
+                <>
+                  <span>GOLDEN</span>
+                  <span className="gm-word-gold">MOMENT</span>
+                </>
+              )}
             </div>
             <p>{siteConfig.footer.description}</p>
             <div className="gm-footer-badges">
@@ -1312,12 +1433,26 @@ export default function App() {
           <div className="gm-footer-col">
             <h4>Atelier &amp; Socials</h4>
             <ul>
-              <li>
-                <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
-              </li>
+              <li style={{ color: '#fff', fontWeight: 600 }}>{siteConfig.companyName}</li>
               <li>
                 <a href={`tel:${siteConfig.phoneDirectTel}`}>{siteConfig.phoneDirect}</a>
               </li>
+              <li>
+                <a href={`https://wa.me/${siteConfig.whatsappNumber}`} target="_blank" rel="noreferrer">
+                  WhatsApp: {siteConfig.whatsappDisplay || siteConfig.phoneDirect}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+              </li>
+              <li>{siteConfig.address.full}</li>
+              {siteConfig.website && (
+                <li>
+                  <a href={`https://${siteConfig.website.replace(/^https?:\/\//, '')}`} target="_blank" rel="noreferrer">
+                    {siteConfig.website}
+                  </a>
+                </li>
+              )}
               {siteConfig.footer.socials.map((soc) => (
                 <li key={soc.label}>
                   <a href={soc.url} target="_blank" rel="noreferrer">
