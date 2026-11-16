@@ -22,7 +22,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -1922,5 +1922,355 @@ img {
   .gm-pillars-grid,
   .gm-footer-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   12. SKIPER UI & MOTIONPROMPTS.DEV ANIMATION SYSTEM
+   ========================================================================== */
+
+/* Skiper #08/#09 Words + Vertical Stairs Preloader */
+.gm-preloader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gm-preloader-stairs {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.gm-preloader-stair {
+  width: 100%;
+  height: 100%;
+  background: #14110f;
+  will-change: transform;
+}
+
+.gm-preloader-word-wrap {
+  position: relative;
+  z-index: 2;
+  padding: 0 24px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.gm-preloader-word {
+  display: inline-block;
+  font-family: var(--gm-font-serif);
+  font-size: clamp(1.8rem, 4.5vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #d6b25e;
+  will-change: transform, opacity;
+}
+
+/* Skiper #89 Scroll Progress Top Bar */
+.gm-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 1000;
+  background: linear-gradient(90deg, #9b7a2c 0%, #e5c158 50%, #9b7a2c 100%);
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Progressive blur disabled for 60fps compositor performance */
+.gm-progressive-blur {
+  display: none;
+}
+
+/* Skiper #27/#58 Text Roll Navigation */
+.gm-text-roll {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  overflow: hidden;
+  line-height: 1.25;
+  height: 1.25em;
+}
+
+.gm-text-roll-inner {
+  display: block;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.gm-text-roll-bottom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  color: var(--gm-gold);
+  transform: translateY(105%);
+}
+
+.gm-nav-link:hover .gm-text-roll-top,
+.gm-nav-link:focus-visible .gm-text-roll-top {
+  transform: translateY(-105%);
+}
+
+.gm-nav-link:hover .gm-text-roll-bottom,
+.gm-nav-link:focus-visible .gm-text-roll-bottom {
+  transform: translateY(0%);
+}
+
+/* motionprompts.dev Magnetic Button Wrapper */
+.gm-magnetic-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+/* motionprompts.dev Word Split Reveal */
+.gm-split-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+  perspective: 600px;
+}
+
+.gm-split-word {
+  display: inline-block;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+
+/* motionprompts.dev 3D Tilt + Skiper #90 Spotlight Card */
+.gm-tilt-card {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.gm-tilt-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    360px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(214, 178, 94, 0.18),
+    transparent 65%
+  );
+  transition: opacity 0.35s ease;
+}
+
+.gm-tilt-card:hover .gm-tilt-spotlight {
+  opacity: 1;
+}
+
+/* Skiper #35/#52 Category Trio Hover Expand on Desktop */
+@media (min-width: 769px) {
+  .gm-category-trio {
+    display: flex;
+    gap: 4px;
+  }
+
+  .gm-category-trio .gm-cat-card {
+    flex: 1 1 0%;
+    height: clamp(380px, 44vw, 560px);
+    aspect-ratio: auto;
+    transition: flex 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .gm-category-trio:hover .gm-cat-card {
+    flex: 0.86 1 0%;
+  }
+
+  .gm-category-trio .gm-cat-card:hover {
+    flex: 1.32 1 0%;
+  }
+}
+
+/* Carousel Slide Scale + Opacity Transition */
+.gm-carousel-slide-anim {
+  animation: gmSlideReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes gmSlideReveal {
+  0% {
+    opacity: 0.25;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Skiper #44 Vercel Scroll with Blur + motionprompts Ritual Section */
+.gm-ritual-blur-section {
+  background: linear-gradient(180deg, var(--gm-alabaster) 0%, var(--gm-white) 100%);
+  padding: 84px 32px;
+  border-top: 1px solid var(--gm-border);
+  border-bottom: 1px solid var(--gm-border);
+}
+
+.gm-ritual-blur-inner {
+  max-width: 1220px;
+  margin: 0 auto;
+}
+
+.gm-ritual-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.gm-ritual-blur-card {
+  background: var(--gm-white);
+  border: 1px solid var(--gm-border);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.gm-ritual-blur-card.is-focused,
+.gm-ritual-blur-card:hover {
+  border-color: var(--gm-gold);
+  background: #fffdf9;
+  box-shadow: 0 18px 42px rgba(28, 25, 23, 0.08);
+}
+
+.gm-ritual-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gm-ritual-num {
+  font-family: var(--gm-font-serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--gm-gold);
+  line-height: 1;
+}
+
+.gm-ritual-title {
+  font-family: var(--gm-font-serif);
+  font-size: 1.45rem;
+  font-weight: 500;
+  color: var(--gm-ink);
+  line-height: 1.25;
+}
+
+.gm-ritual-desc {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--gm-muted);
+  flex: 1;
+}
+
+.gm-ritual-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gm-ritual-note-pill {
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  background: var(--gm-alabaster);
+  border: 1px solid var(--gm-border);
+  color: var(--gm-ink-soft);
+}
+
+.gm-ritual-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--gm-gold);
+  padding: 6px 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gm-ink);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.gm-ritual-cta:hover {
+  color: var(--gm-gold);
+}
+
+@media (max-width: 1024px) {
+  .gm-ritual-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gm-ritual-blur-section {
+    padding: 52px 18px 60px;
+  }
+
+  .gm-progressive-blur {
+    height: 24px;
+  }
+}
+
+/* Reduced Motion Accessibility Fallback */
+@media (prefers-reduced-motion: reduce) {
+  .gm-preloader-overlay,
+  .gm-scroll-progress,
+  .gm-progressive-blur {
+    display: none !important;
+  }
+
+  .gm-ticker-track,
+  .gm-carousel-slide-anim {
+    animation: none !important;
+  }
+
+  .gm-text-roll-inner,
+  .gm-category-trio .gm-cat-card,
+  .gm-tilt-spotlight {
+    transition: none !important;
+  }
+
+  .gm-split-word,
+  .gm-ritual-blur-card,
+  .gm-prod-card,
+  .gm-cat-card,
+  .gm-pillar-card,
+  .gm-faq-item,
+  .gm-contact-card-dark,
+  .gm-contact-form-card {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    clip-path: none !important;
   }
 }

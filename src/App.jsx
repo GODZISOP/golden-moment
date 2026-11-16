@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Phone, Mail, MapPin, Search, ArrowRight, CheckCircle2,
   X, MessageSquare, ShoppingBag, Menu as MenuIcon,
@@ -8,6 +8,16 @@ import {
 import { categories, products } from './data/products';
 import { siteConfig as defaultSiteConfig } from './data/siteConfig';
 import { AdminPanel, useActiveSiteConfig } from './admin';
+import {
+  WordsPreloader,
+  ScrollProgressBar,
+  TextRoll,
+  MagneticButton,
+  SplitTextReveal,
+  TiltSpotlightCard,
+  VercelBlurScrollSection,
+  useGoldenMomentMotion
+} from './components/SkiperMotionComponents';
 import logoImg from './images/golden-moment-logo.svg';
 import heroBg from './images/hero-golden-moment.webp';
 import brandBottleImg from './images/bottle-golden-moment.webp';
@@ -242,7 +252,7 @@ export default function App() {
     setMobileMenuOpen(false);
     setFormSubmitted(false);
     setContactSubmitted(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   };
 
   const toggleWishlist = (product, e) => {
@@ -299,7 +309,7 @@ export default function App() {
     setDetailQuantity(1);
     setActiveDetailTab('description');
     setActiveTab('product-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   };
 
   const closeModal = () => {
@@ -369,7 +379,11 @@ export default function App() {
         <div className="gm-subpage-inner gm-faq-container">
           <div className="gm-subpage-head">
             <span className="gm-kicker">ATELIER CARE GUIDE</span>
-            <HeadingTag className="gm-subpage-title">Frequently Asked Questions</HeadingTag>
+            <SplitTextReveal
+              text="Frequently Asked Questions"
+              as={HeadingTag}
+              className="gm-subpage-title"
+            />
             <p className="gm-subpage-lead">
               Everything you need to know about our Extrait de Parfum body oils, unrefined African shea butters, and global shipping.
             </p>
@@ -409,7 +423,11 @@ export default function App() {
         <div className="gm-subpage-inner">
           <div className="gm-subpage-head">
             <span className="gm-kicker">{siteConfig.contact.sectionTag}</span>
-            <HeadingTag className="gm-subpage-title">Contact {siteConfig.companyName}</HeadingTag>
+            <SplitTextReveal
+              text={`Contact ${siteConfig.companyName}`}
+              as={HeadingTag}
+              className="gm-subpage-title"
+            />
             <p className="gm-subpage-lead">{siteConfig.contact.tagline}</p>
           </div>
 
@@ -493,9 +511,11 @@ export default function App() {
                   <label>Message *</label>
                   <textarea rows={4} required placeholder="How may our atelier assist you?" />
                 </div>
-                <button type="submit" className="gm-btn-gold">
-                  Send Message
-                </button>
+                <MagneticButton>
+                  <button type="submit" className="gm-btn-gold">
+                    Send Message
+                  </button>
+                </MagneticButton>
               </form>
               {contactSubmitted && (
                 <div className="gm-success-note">
@@ -509,12 +529,17 @@ export default function App() {
     );
   };
 
+  const containerRef = useRef(null);
+  useGoldenMomentMotion(isAdminMode ? 'admin' : activeTab, containerRef, activeProduct?.id);
+
   if (isAdminMode) {
     return <AdminPanel onExitAdmin={exitAdmin} />;
   }
 
   return (
-    <div className="gm-app-shell">
+    <div ref={containerRef} className="gm-app-shell">
+      <WordsPreloader />
+      <ScrollProgressBar />
       {/* LUXURY EDITORIAL TWO-TIER HEADER */}
       <header className="gm-header">
         {/* Top Utility & Centered Brand Wordmark Row */}
@@ -594,7 +619,7 @@ export default function App() {
                 className={`gm-nav-link ${activeTab === 'home' ? 'is-active' : ''}`}
                 onClick={() => navigateTo('home')}
               >
-                HOME
+                <TextRoll text="HOME" />
               </button>
             </li>
             <li>
@@ -603,7 +628,7 @@ export default function App() {
                 className={`gm-nav-link ${activeTab === 'shop' ? 'is-active' : ''}`}
                 onClick={() => navigateTo('shop', 'all')}
               >
-                SHOP
+                <TextRoll text="SHOP" />
               </button>
             </li>
             <li>
@@ -612,7 +637,7 @@ export default function App() {
                 className={`gm-nav-link ${activeTab === 'about' ? 'is-active' : ''}`}
                 onClick={() => navigateTo('about')}
               >
-                ABOUT US
+                <TextRoll text="ABOUT US" />
               </button>
             </li>
             <li>
@@ -621,7 +646,7 @@ export default function App() {
                 className={`gm-nav-link ${activeTab === 'faq' ? 'is-active' : ''}`}
                 onClick={() => navigateTo('faq')}
               >
-                FAQ
+                <TextRoll text="FAQ" />
               </button>
             </li>
             <li>
@@ -630,7 +655,7 @@ export default function App() {
                 className={`gm-nav-link ${activeTab === 'contact' ? 'is-active' : ''}`}
                 onClick={() => navigateTo('contact')}
               >
-                CONTACT
+                <TextRoll text="CONTACT" />
               </button>
             </li>
           </ul>
@@ -732,14 +757,16 @@ export default function App() {
                 {siteConfig.heroSubtitle}
               </p>
               <div className="gm-hero-cta-row">
-                <button
-                  type="button"
-                  className="gm-hero-shop-link"
-                  onClick={() => navigateTo('shop', 'all')}
-                >
-                  <span>EXPLORE COLLECTION</span>
-                  <ChevronRight size={14} />
-                </button>
+                <MagneticButton>
+                  <button
+                    type="button"
+                    className="gm-hero-shop-link"
+                    onClick={() => navigateTo('shop', 'all')}
+                  >
+                    <span>EXPLORE COLLECTION</span>
+                    <ChevronRight size={14} />
+                  </button>
+                </MagneticButton>
               </div>
             </div>
           </section>
@@ -885,6 +912,9 @@ export default function App() {
             ))}
           </section>
 
+          {/* 4.5 SKIPER44 × MOTIONPROMPTS RITUAL SCROLL SECTION */}
+          <VercelBlurScrollSection onExplore={(cat) => navigateTo('shop', cat)} />
+
           {/* 5. EIGHT-PRODUCT LUXURY COLLECTION GRID (4 x 2) */}
           <section id="featured-products-section" className="gm-collection-section">
             <div className="gm-collection-container">
@@ -892,7 +922,8 @@ export default function App() {
                 {homeShowcaseProducts.map((prod) => {
                   const isWished = wishlist.includes(prod.id);
                   return (
-                    <article
+                    <TiltSpotlightCard
+                      as="article"
                       key={prod.id}
                       className="gm-prod-card"
                       onClick={() => viewProductDetail(prod)}
@@ -936,19 +967,21 @@ export default function App() {
                         <h3 className="gm-prod-title">{prod.shortTitle}</h3>
                         <div className="gm-prod-price">{formatPrice(prod.priceNumeric)}</div>
                       </div>
-                    </article>
+                    </TiltSpotlightCard>
                   );
                 })}
               </div>
 
               <div className="gm-view-all-wrap">
-                <button
-                  type="button"
-                  className="gm-outline-btn"
-                  onClick={() => navigateTo('shop', 'all')}
-                >
-                  VIEW FULL ATELIER CATALOG ({products.length})
-                </button>
+                <MagneticButton>
+                  <button
+                    type="button"
+                    className="gm-outline-btn"
+                    onClick={() => navigateTo('shop', 'all')}
+                  >
+                    VIEW FULL ATELIER CATALOG ({products.length})
+                  </button>
+                </MagneticButton>
               </div>
             </div>
           </section>
@@ -956,9 +989,10 @@ export default function App() {
           {/* 6. BOTTOM EDITORIAL CAROUSEL ("THE ELEGANCE OF SCENT") */}
           <section className="gm-scent-carousel" aria-label="The Elegance of Scent">
             <img
+              key={`img-${activeSlide}`}
               src={scentSlides[activeSlide].image}
               alt={`${scentSlides[activeSlide].titleTop} ${scentSlides[activeSlide].titleMain}`}
-              className="gm-carousel-bg"
+              className="gm-carousel-bg gm-carousel-slide-anim"
               loading="lazy"
             />
             <div className="gm-carousel-scrim" aria-hidden="true" />
@@ -976,7 +1010,8 @@ export default function App() {
             </div>
 
             <div
-              className="gm-carousel-copy"
+              key={`copy-${activeSlide}`}
+              className="gm-carousel-copy gm-carousel-slide-anim"
               onClick={() => {
                 const s = scentSlides[activeSlide];
                 if (s.actionProductId) {
@@ -1111,7 +1146,8 @@ export default function App() {
                 {filteredProducts.map((prod) => {
                   const isWished = wishlist.includes(prod.id);
                   return (
-                    <article
+                    <TiltSpotlightCard
+                      as="article"
                       key={prod.id}
                       className="gm-prod-card"
                       onClick={() => viewProductDetail(prod)}
@@ -1155,7 +1191,7 @@ export default function App() {
                         <h3 className="gm-prod-title">{prod.shortTitle}</h3>
                         <div className="gm-prod-price">{formatPrice(prod.priceNumeric)}</div>
                       </div>
-                    </article>
+                    </TiltSpotlightCard>
                   );
                 })}
               </div>
@@ -1351,13 +1387,15 @@ export default function App() {
                 <p>{siteConfig.about.sourcingNote}</p>
                 <p>{siteConfig.about.b2bNote}</p>
                 <div className="gm-about-actions">
-                  <button
-                    type="button"
-                    className="gm-btn-gold"
-                    onClick={() => navigateTo('shop', 'all')}
-                  >
-                    Shop Collection
-                  </button>
+                  <MagneticButton>
+                    <button
+                      type="button"
+                      className="gm-btn-gold"
+                      onClick={() => navigateTo('shop', 'all')}
+                    >
+                      Shop Collection
+                    </button>
+                  </MagneticButton>
                   <button
                     type="button"
                     className="gm-outline-btn"
@@ -1371,11 +1409,11 @@ export default function App() {
 
             <div className="gm-pillars-grid">
               {siteConfig.about.cards.map((card, idx) => (
-                <div key={card.title} className="gm-pillar-card">
+                <TiltSpotlightCard key={card.title} className="gm-pillar-card">
                   <span className="gm-pillar-num">0{idx + 1}</span>
                   <h3>{card.title}</h3>
                   <p>{card.description}</p>
-                </div>
+                </TiltSpotlightCard>
               ))}
             </div>
           </div>
