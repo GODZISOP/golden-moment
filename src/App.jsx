@@ -18,6 +18,7 @@ import {
   VercelBlurScrollSection,
   useGoldenMomentMotion
 } from './components/SkiperMotionComponents';
+import VectorWordmark from './components/VectorWordmark';
 import logoImg from './images/golden-moment-logo.svg';
 import heroBg from './images/hero-golden-moment.webp';
 import brandBottleImg from './images/bottle-golden-moment.webp';
@@ -1034,6 +1035,59 @@ export default function App() {
               <p className="gm-carousel-sub">
                 {scentSlides[activeSlide].subtitle}
               </p>
+            </div>
+          </section>
+
+          {/* 6.5. INTERACTIVE ATELIER WORDMARK CANVAS (ORIGINKIT VECTOR WORDMARK) */}
+          <section className="gm-wordmark-section" aria-label="Interactive Atelier Signature">
+            <div className="gm-wordmark-container">
+              <div className="gm-wordmark-header">
+                <span className="gm-wordmark-badge">✦ ATELIER SIGNATURE VECTOR CANVAS ✦</span>
+                <h2 className="gm-wordmark-title">
+                  THE GEOMETRY OF LUXURY
+                </h2>
+                <p className="gm-wordmark-subtitle">
+                  Move your cursor or touch across the canvas to awaken dynamic antique gold coordinate vectors and botanical perfume lattices.
+                </p>
+              </div>
+
+              <div className="gm-wordmark-canvas-card">
+                <VectorWordmark
+                  text="GOLDEN MOMENT"
+                  font={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    fontWeight: 700,
+                    fontSize: "125px",
+                    lineHeight: "1em",
+                    letterSpacing: "0.05em",
+                    textAlign: "center",
+                  }}
+                  background="#0b0a09"
+                  textColor="#fbf4e2"
+                  shade="#9b7a2c"
+                  accent="#dfbf72"
+                  reach={360}
+                  speed={45}
+                  damping={65}
+                  handles={{ size: 95, spread: 26, labels: true }}
+                  style={{ height: "420px", minHeight: "340px" }}
+                />
+
+                <div className="gm-wordmark-infobar">
+                  <div className="gm-wordmark-info-col">
+                    <span className="gm-wm-label">HARMONIC SCALE</span>
+                    <span className="gm-wm-val">1:1.618 GOLDEN RATIO</span>
+                  </div>
+                  <div className="gm-wordmark-info-col">
+                    <span className="gm-wm-label">DYNAMIC COMPOSITOR</span>
+                    <span className="gm-wm-val">60FPS DUAL-CHANNEL ATLAS</span>
+                  </div>
+                  <div className="gm-wordmark-info-col">
+                    <span className="gm-wm-label">INTERACTION</span>
+                    <span className="gm-wm-val">HOVER / TOUCH SENSITIVE</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
